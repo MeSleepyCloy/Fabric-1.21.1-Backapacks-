@@ -6,6 +6,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.screen.slot.Slot;
 
 public class LeatherworkTableScreenHandler extends ScreenHandler {
@@ -64,6 +65,11 @@ public class LeatherworkTableScreenHandler extends ScreenHandler {
             }
         }
         return newStack;
+    }
+
+    @Override
+    public ScreenHandlerType<?> getType() {
+        return BPScreenHandlers.LEATHERWORK_TABLE_SCREEN_HANDLER;
     }
 
     @Override

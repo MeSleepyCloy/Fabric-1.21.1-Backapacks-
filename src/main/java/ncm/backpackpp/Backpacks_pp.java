@@ -23,7 +23,7 @@ public class Backpacks_pp implements ModInitializer {
 		ModCreativeTabBP.registerBPItemGroups();
 		BppItems.registerModItems();
 		BPBlocks.registerAll();
-		BPScreenHandlers.registerServerSide();
+		BPScreenHandlers.register();
 		BPBlockEntities.registerBlockEntities();
 	}
 }
