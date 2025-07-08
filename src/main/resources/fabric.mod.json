@@ -1,0 +1,40 @@
+{
+	"schemaVersion": 1,
+	"id": "backpacks_pp",
+	"version": "${version}",
+	"name": "Backpacks++",
+	"description": "This is just backpacks!",
+	"authors": [
+		"WarfelliNI and NCM"
+	],
+	"contact": {
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/backpacks_pp/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"ncm.backpackpp.Backpacks_pp"
+		],
+		"client": [
+			"ncm.backpackpp.client.BackpacksClient"
+		],
+		"fabric-datagen": [
+			"ncm.backpackpp.DataGenerator.Backpacks_ppDataGenerator"
+		]
+	},
+	"mixins": [
+		"backpacks_pp.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.16.14",
+		"minecraft": "~1.21.1",
+		"java": ">=21",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
+}

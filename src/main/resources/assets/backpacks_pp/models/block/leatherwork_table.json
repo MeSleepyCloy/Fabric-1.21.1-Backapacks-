@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "down": "minecraft:block/oak_planks",
+    "east": "backpacks_pp:block/leatherwork_table_side",
+    "north": "backpacks_pp:block/leatherwork_table_side",
+    "south": "backpacks_pp:block/leatherwork_table_side",
+    "up": "backpacks_pp:block/leatherwork_table_top",
+    "west": "backpacks_pp:block/leatherwork_table_side",
+    "particle": "minecraft:block/oak_planks"
+  }
+}

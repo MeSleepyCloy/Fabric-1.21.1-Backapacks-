@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "backpacks_pp:copper_needle",
+    "backpacks_pp:gold_needle",
+    "backpacks_pp:iron_needle",
+    "backpacks_pp:diamond_needle",
+    "backpacks_pp:netherite_needle"
+  ]
+}
