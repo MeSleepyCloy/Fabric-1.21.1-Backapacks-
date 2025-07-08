@@ -13,7 +13,7 @@ public class LeatherworkTableScreenHandler extends ScreenHandler {
     private final Inventory inventory;
 
     public LeatherworkTableScreenHandler(int syncId, PlayerInventory playerInventory, Inventory inventory) {
-        super(BPScreenHandlers.LEATHERWORK_TABLE_SCREEN_HANDLER, syncId);
+        super(null, syncId);
         this.inventory = inventory;
         checkSize(inventory, 10);
         inventory.onOpen(playerInventory.player);
@@ -68,12 +68,12 @@ public class LeatherworkTableScreenHandler extends ScreenHandler {
     }
 
     @Override
-    public ScreenHandlerType<?> getType() {
-        return BPScreenHandlers.LEATHERWORK_TABLE_SCREEN_HANDLER;
+    public boolean canUse(PlayerEntity player) {
+        return this.inventory.canPlayerUse(player);
     }
 
     @Override
-    public boolean canUse(PlayerEntity player) {
-        return this.inventory.canPlayerUse(player);
+    public ScreenHandlerType<?> getType() {
+        return BPScreenHandlers.LEATHERWORK_TABLE_SCREEN_HANDLER;
     }
 }
