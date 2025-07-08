@@ -20,7 +20,7 @@ import org.jetbrains.annotations.Nullable;
 import static ncm.backpackpp.init.BPBlockEntities.LEATHERWORK_TABLE_BLOCK_ENTITY;
 
 public class LeatherworkTableBlockEntity extends BlockEntity implements NamedScreenHandlerFactory, Inventory {
-    private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(9, ItemStack.EMPTY);
+    private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(10, ItemStack.EMPTY);
 
     public LeatherworkTableBlockEntity(BlockPos pos, BlockState state) {
         super(LEATHERWORK_TABLE_BLOCK_ENTITY, pos, state);

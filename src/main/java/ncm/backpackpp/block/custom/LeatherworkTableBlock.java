@@ -50,12 +50,11 @@ public class LeatherworkTableBlock extends HorizontalFacingBlock implements Regi
     @Override
     protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
         if (!world.isClient) {
-            NamedScreenHandlerFactory factory = (NamedScreenHandlerFactory) world.getBlockEntity(pos);
-            if (factory != null) {
+            BlockEntity blockEntity = world.getBlockEntity(pos);
+            if (blockEntity instanceof NamedScreenHandlerFactory factory) {
                 player.openHandledScreen(factory);
             }
         }
-
         return ActionResult.SUCCESS;
     }
 

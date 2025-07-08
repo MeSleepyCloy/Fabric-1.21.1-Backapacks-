@@ -21,11 +21,13 @@ public class LeatherworkTableScreenHandler extends ScreenHandler {
         int gridIndex = 0;
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 3; col++) {
-                if (row == 1 || col == 1) { // Только центральные слоты
+                if (row == 1 || col == 1) {
                     this.addSlot(new Slot(inventory, gridIndex++, 44 + col * 18, 17 + row * 18));
                 }
             }
         }
+
+        this.addSlot(new Slot(inventory, 9, 106, 35));
 
         for (int row = 0; row < 3; ++row) {
             for (int col = 0; col < 9; ++col) {
