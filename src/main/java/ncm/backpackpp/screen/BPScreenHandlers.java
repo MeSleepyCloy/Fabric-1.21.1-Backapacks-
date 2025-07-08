@@ -22,16 +22,17 @@ public class BPScreenHandlers {
             Registry.register(Registries.SCREEN_HANDLER, Identifier.of("backpacks_pp", "small_chest_screen_handler"),
                     new ExtendedScreenHandlerType<>(SmallChestScreenHandler::new, BlockPos.PACKET_CODEC));
 
-    public static final ScreenHandlerType<LeatherworkTableScreenHandler> LEATHERWORK_TABLE_SCREEN_HANDLER =
-            new ScreenHandlerType<>(
-                    (syncId, playerInv) -> new LeatherworkTableScreenHandler(syncId, playerInv, new SimpleInventory(10)),
-                    FeatureFlags.VANILLA_FEATURES
-            );
+    public static ScreenHandlerType<LeatherworkTableScreenHandler> LEATHERWORK_TABLE_SCREEN_HANDLER;
 
     public static void register() {
-        Registry.register(Registries.SCREEN_HANDLER,
+        LEATHERWORK_TABLE_SCREEN_HANDLER = Registry.register(
+                Registries.SCREEN_HANDLER,
                 BpIndentifier.of("leatherwork_table"),
-                LEATHERWORK_TABLE_SCREEN_HANDLER);
+                new ScreenHandlerType<>(
+                        (syncId, playerInv) -> new LeatherworkTableScreenHandler(syncId, playerInv, new SimpleInventory(10)),
+                        FeatureFlags.VANILLA_FEATURES
+                )
+        );
     }
 
     private static <T extends ScreenHandler> ScreenHandlerType<T> createType(ScreenHandlerType.Factory<T> factory) {
