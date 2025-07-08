@@ -8,6 +8,8 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.screen.NamedScreenHandlerFactory;
+import net.minecraft.state.StateManager;
+import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -16,8 +18,13 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 public class LeatherworkTableBlock extends HorizontalFacingBlock implements RegistrableBlock,BlockEntityProvider {
-
+    public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
     private static final MapCodec<LeatherworkTableBlock> CODEC = MapCodec.unit(LeatherworkTableBlock::new);
+
+    @Override
+    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+        builder.add(FACING);
+    }
 
     public LeatherworkTableBlock() {
         super(Settings.copy(Blocks.CRAFTING_TABLE));
