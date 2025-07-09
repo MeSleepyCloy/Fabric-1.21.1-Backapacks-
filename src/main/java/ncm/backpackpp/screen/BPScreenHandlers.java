@@ -28,7 +28,7 @@ public class BPScreenHandlers {
     public static void register() {
         LEATHERWORK_TABLE_SCREEN_HANDLER = Registry.register(Registries.SCREEN_HANDLER, BpIndentifier.of("leatherwork_table"),
                 new ScreenHandlerType<>((syncId, playerInv) -> new LeatherworkTableScreenHandler(syncId, playerInv,
-                        new SimpleInventory(10)),
+                        new SimpleInventory(11)),
                         FeatureFlags.VANILLA_FEATURES
                 )
         );

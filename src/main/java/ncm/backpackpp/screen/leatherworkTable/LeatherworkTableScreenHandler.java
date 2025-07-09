@@ -5,41 +5,38 @@ import ncm.backpackpp.screen.BPScreenHandlers;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.screen.slot.Slot;
 
 public class LeatherworkTableScreenHandler extends ScreenHandler {
     private final Inventory inventory;
-    private final PlayerEntity player;
+
+    private static final Item[] NEEDLES = {
+            BppItems.IRON_NEEDLE,
+            BppItems.COPPER_NEEDLE,
+            BppItems.GOLD_NEEDLE,
+            BppItems.DIAMOND_NEEDLE,
+            BppItems.NETHERITE_NEEDLE,
+    };
 
     public LeatherworkTableScreenHandler(int syncId, PlayerInventory playerInventory, Inventory inventory) {
-        super(BPScreenHandlers.LEATHERWORK_TABLE_SCREEN_HANDLER, syncId);
+        super(null, syncId);
         this.inventory = inventory;
-        this.player = playerInventory.player;
-        checkSize(inventory, 10);
+        checkSize(inventory, 11);
         inventory.onOpen(playerInventory.player);
 
-        // Слоты для ингредиентов (3x3 сетка)
         for (int row = 0; row < 3; ++row) {
             for (int col = 0; col < 3; ++col) {
-                this.addSlot(new Slot(this.inventory, row * 3 + col, 14 + col * 18, 17 + row * 18));
+                this.addSlot(new CraftingSlot(inventory, row * 3 + col, 14 + col * 18, 17 + row * 18));
             }
         }
 
-        this.addSlot(new Slot(this.inventory, 9, 106, 35) {
-            @Override
-            public boolean canInsert(ItemStack stack) {
-                return false;
-            }
-
-            @Override
-            public void onTakeItem(PlayerEntity player, ItemStack stack) {
-                consumeIngredients();
-                super.onTakeItem(player, stack);
-            }
-        });
+        this.addSlot(new ResultSlot(inventory, 9, 106, 35));
+        this.addSlot(new NeedleSlot(inventory, 10, 153, 7));
 
         for (int row = 0; row < 3; ++row) {
             for (int col = 0; col < 9; ++col) {
@@ -52,31 +49,133 @@ public class LeatherworkTableScreenHandler extends ScreenHandler {
         }
     }
 
+    private class NeedleSlot extends Slot {
+        public NeedleSlot(Inventory inventory, int index, int x, int y) {
+            super(inventory, index, x, y);
+        }
+        @Override
+        public boolean canInsert(ItemStack stack) {
+            return isNeedle(stack.getItem());
+        }
+
+        @Override
+        public ItemStack takeStack(int amount) {
+            ItemStack stack = super.takeStack(amount);
+            updateResult();
+            return stack;
+        }
+
+        @Override
+        public void markDirty() {
+            super.markDirty();
+            updateResult();
+        }
+
+
+        private boolean isNeedle(Item item) {
+            for (Item needle : NEEDLES) {
+                if (item == needle) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        @Override
+        public void setStack(ItemStack stack) {
+            super.setStack(stack);
+            updateResult();
+        }
+    }
+
+
+    private class CraftingSlot extends Slot {
+        public CraftingSlot(Inventory inventory, int index, int x, int y) {
+            super(inventory, index, x, y);
+        }
+
+        @Override
+        public void setStack(ItemStack stack) {
+            super.setStack(stack);
+            updateResult();
+        }
+
+        @Override
+        public void markDirty() {
+            super.markDirty();
+            updateResult();
+        }
+    }
+
+    private class ResultSlot extends Slot {
+        public ResultSlot(Inventory inventory, int index, int x, int y) {
+            super(inventory, index, x, y);
+        }
+
+        @Override
+        public boolean canInsert(ItemStack stack) {
+            return false;
+        }
+
+
+        @Override
+        public void onTakeItem(PlayerEntity player, ItemStack stack) {
+            consumeIngredients();
+            updateResult();
+            super.onTakeItem(player, stack);
+        }
+
+        @Override
+        public void setStack(ItemStack stack) {
+            super.setStack(stack);
+            if (stack.isEmpty()) {
+                updateResult();
+            }
+        }
+    }
+
+    private void updateResult() {
+        if (matchesRecipe()) {
+            if (inventory.getStack(9).isEmpty()) {
+                inventory.setStack(9, new ItemStack(BppItems.BACKPACK));
+            }
+        } else {
+            if (inventory.getStack(9).isOf(BppItems.BACKPACK)) {
+                inventory.setStack(9, ItemStack.EMPTY);
+            }
+        }
+    }
+
     private boolean matchesRecipe() {
-        return inventory.getStack(0).isOf(Items.LEATHER)
-                && inventory.getStack(1).isOf(Items.LEATHER)
-                && inventory.getStack(2).isOf(Items.LEATHER)
-                && inventory.getStack(3).isOf(Items.LEATHER)
-                && inventory.getStack(4).isOf(Items.STRING)
-                && inventory.getStack(5).isOf(Items.LEATHER)
-                && inventory.getStack(6).isOf(Items.LEATHER)
-                && inventory.getStack(7).isOf(Items.LEATHER)
-                && inventory.getStack(8).isOf(Items.LEATHER);
+        if (inventory.getStack(10).isEmpty()) {
+            return false;
+        }
+        for (int i = 0; i < 9; i++) {
+            ItemStack stack = inventory.getStack(i);
+            if (i == 4) {
+                if (!stack.isOf(Items.STRING) || stack.getCount() < 1) return false;
+            } else {
+                if (!stack.isOf(Items.LEATHER) || stack.getCount() < 1) return false;
+            }
+        }
+        return true;
     }
 
     private void consumeIngredients() {
         for (int i = 0; i < 9; i++) {
-            inventory.getStack(i).decrement(1);
+            ItemStack stack = inventory.getStack(i);
+            if (!stack.isEmpty()) {
+                stack.decrement(1);
+                if (stack.getCount() <= 0) {
+                    inventory.setStack(i, ItemStack.EMPTY);
+                }
+            }
         }
     }
 
     @Override
     public void onContentChanged(Inventory inventory) {
-        if (matchesRecipe()) {
-            inventory.setStack(9, new ItemStack(BppItems.BACKPACK));
-        } else {
-            inventory.setStack(9, ItemStack.EMPTY);
-        }
+        updateResult();
         super.onContentChanged(inventory);
     }
 
@@ -89,14 +188,34 @@ public class LeatherworkTableScreenHandler extends ScreenHandler {
             ItemStack originalStack = slot.getStack();
             newStack = originalStack.copy();
 
-            int inventorySize = this.inventory.size();
-
-            if (index < inventorySize - 1) {
-                if (!this.insertItem(originalStack, inventorySize, this.slots.size(), true)) {
+            if (index < 10) {
+                if (!this.insertItem(originalStack, 11, 47, true)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (index != inventorySize - 1) {
-                if (!this.insertItem(originalStack, 0, inventorySize - 1, false)) {
+            }
+            else if (index == 10) {
+                if (!this.insertItem(originalStack, 11, 47, true)) {
+                    return ItemStack.EMPTY;
+                }
+                // Явно обновляем результат после перемещения иглы
+                updateResult();
+            }
+            else {
+                boolean isNeedle = false;
+                for (Item needle : NEEDLES) {
+                    if (originalStack.isOf(needle)) {
+                        isNeedle = true;
+                        break;
+                    }
+                }
+                if (isNeedle) {
+                    if (!this.insertItem(originalStack, 10, 11, false)) {
+                        return ItemStack.EMPTY;
+                    }
+                    // Явно обновляем результат после перемещения иглы
+                    updateResult();
+                }
+                else if (!this.insertItem(originalStack, 0, 9, false)) {
                     return ItemStack.EMPTY;
                 }
             }
@@ -106,12 +225,24 @@ public class LeatherworkTableScreenHandler extends ScreenHandler {
             } else {
                 slot.markDirty();
             }
+
+            if (originalStack.getCount() == newStack.getCount()) {
+                return ItemStack.EMPTY;
+            }
+
+            slot.onTakeItem(player, originalStack);
         }
+
         return newStack;
     }
 
     @Override
     public boolean canUse(PlayerEntity player) {
         return this.inventory.canPlayerUse(player);
+    }
+
+    @Override
+    public ScreenHandlerType<?> getType() {
+        return BPScreenHandlers.LEATHERWORK_TABLE_SCREEN_HANDLER;
     }
 }

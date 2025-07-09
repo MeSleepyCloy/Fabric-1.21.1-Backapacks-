@@ -20,7 +20,7 @@ import org.jetbrains.annotations.Nullable;
 import static ncm.backpackpp.init.BPBlockEntities.LEATHERWORK_TABLE_BLOCK_ENTITY;
 
 public class LeatherworkTableBlockEntity extends BlockEntity implements NamedScreenHandlerFactory, Inventory {
-    private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(10, ItemStack.EMPTY);
+    private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(11, ItemStack.EMPTY);
 
     public LeatherworkTableBlockEntity(BlockPos pos, BlockState state) {
         super(LEATHERWORK_TABLE_BLOCK_ENTITY, pos, state);
@@ -71,12 +71,7 @@ public class LeatherworkTableBlockEntity extends BlockEntity implements NamedScr
 
     @Override
     public boolean canPlayerUse(PlayerEntity player) {
-            if (world.getBlockEntity(pos) != this) {
-                return false;
-            }
-            return player.squaredDistanceTo(pos.getX() + 0.5,
-                    pos.getY() + 0.5,
-                    pos.getZ() + 0.5) <= 64.0;
+        return pos.isWithinDistance(player.getPos(), 4.5); // Примерная проверка
     }
 
     @Nullable
