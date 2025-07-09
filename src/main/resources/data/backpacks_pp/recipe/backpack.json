@@ -1,0 +1,10 @@
+{
+  "type": "backpacks_pp:leatherworking",
+  "ingredient": {
+    "item": "minecraft:stick",
+    "count": 8
+  },
+  "result": {
+    "id": "backpacks_pp:backpack"
+  }
+}

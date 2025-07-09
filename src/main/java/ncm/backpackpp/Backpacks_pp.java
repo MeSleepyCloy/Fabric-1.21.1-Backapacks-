@@ -4,6 +4,7 @@ import ncm.backpackpp.init.BPBlocks;
 import ncm.backpackpp.init.BPBlockEntities;
 import ncm.backpackpp.init.BppItems;
 import ncm.backpackpp.init.ModCreativeTabBP;
+import ncm.backpackpp.recipes.ModRecipes;
 import ncm.backpackpp.screen.BPScreenHandlers;
 import net.fabricmc.api.ModInitializer;
 import org.slf4j.Logger;
@@ -25,5 +26,6 @@ public class Backpacks_pp implements ModInitializer {
 		BPBlocks.registerAll();
 		BPScreenHandlers.register();
 		BPBlockEntities.registerBlockEntities();
+		ModRecipes.registerRecipes();
 	}
 }

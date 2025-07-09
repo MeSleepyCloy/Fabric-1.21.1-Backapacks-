@@ -15,6 +15,7 @@ import net.minecraft.screen.slot.Slot;
 public class LeatherworkTableScreenHandler extends ScreenHandler {
     private final Inventory inventory;
 
+
     private static final Item[] NEEDLES = {
             BppItems.IRON_NEEDLE,
             BppItems.COPPER_NEEDLE,
@@ -197,7 +198,6 @@ public class LeatherworkTableScreenHandler extends ScreenHandler {
                 if (!this.insertItem(originalStack, 11, 47, true)) {
                     return ItemStack.EMPTY;
                 }
-                // Явно обновляем результат после перемещения иглы
                 updateResult();
             }
             else {

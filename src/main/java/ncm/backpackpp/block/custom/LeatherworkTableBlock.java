@@ -5,27 +5,35 @@ import ncm.backpackpp.block.entity.LeatherworkTableBlockEntity;
 import ncm.backpackpp.util.RegistrableBlock;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityTicker;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.item.ItemStack;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-public class LeatherworkTableBlock extends HorizontalFacingBlock implements RegistrableBlock,BlockEntityProvider {
+import static ncm.backpackpp.init.BPBlockEntities.LEATHERWORK_TABLE_BLOCK_ENTITY;
+
+public class LeatherworkTableBlock extends BlockWithEntity implements RegistrableBlock,BlockEntityProvider {
+
     public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
     private static final MapCodec<LeatherworkTableBlock> CODEC = MapCodec.unit(LeatherworkTableBlock::new);
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(FACING);
+    }
+
+    @Override
+    protected BlockRenderType getRenderType(BlockState state) {
+        return BlockRenderType.MODEL;
     }
 
     public LeatherworkTableBlock() {
@@ -46,7 +54,7 @@ public class LeatherworkTableBlock extends HorizontalFacingBlock implements Regi
 
 
     @Override
-    protected MapCodec<? extends HorizontalFacingBlock> getCodec() {
+    protected MapCodec<? extends BlockWithEntity> getCodec() {
         return CODEC;
     }
 
@@ -76,5 +84,16 @@ public class LeatherworkTableBlock extends HorizontalFacingBlock implements Regi
     @Override
     public String getBlockId() {
         return "leatherwork_table";
+    }
+
+    @Nullable
+    @Override
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
+        if(world.isClient()) {
+            return null;
+        }
+
+        return validateTicker(type, LEATHERWORK_TABLE_BLOCK_ENTITY,
+                (world1, pos, state1, blockEntity) -> blockEntity.tick(world1, pos, state1));
     }
 }
