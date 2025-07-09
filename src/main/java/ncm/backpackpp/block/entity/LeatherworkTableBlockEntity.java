@@ -13,8 +13,10 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.text.Text;
+import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import static ncm.backpackpp.init.BPBlockEntities.LEATHERWORK_TABLE_BLOCK_ENTITY;
@@ -100,5 +102,16 @@ public class LeatherworkTableBlockEntity extends BlockEntity implements NamedScr
     @Override
     public void clear() {
         inventory.clear();
+    }
+
+    public void dropContentsExcludingResult(World world, BlockPos pos) {
+        for (int i = 0; i < this.size(); i++) {
+            if (i != 9 && !this.getStack(i).isEmpty()) {
+                ItemScatterer.spawn(world, pos.getX(), pos.getY(), pos.getZ(), this.getStack(i));
+                this.setStack(i, ItemStack.EMPTY);
+            }
+        }
+        // Гарантированно очищаем результат
+        this.setStack(9, ItemStack.EMPTY);
     }
 }
