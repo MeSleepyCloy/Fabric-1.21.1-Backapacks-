@@ -7,8 +7,6 @@ import ncm.backpackpp.recipes.ModRecipes;
 import ncm.backpackpp.screen.leatherworkTable.LeatherworkTableScreenHandler;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityTicker;
-import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
@@ -32,7 +30,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
-import static ncm.backpackpp.init.BPBlockEntities.LEATHERWORK_TABLE_BLOCK_ENTITY;
 
 public class LeatherworkTableBlockEntity extends BlockEntity implements NamedScreenHandlerFactory, Inventory {
     private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(11, ItemStack.EMPTY);
