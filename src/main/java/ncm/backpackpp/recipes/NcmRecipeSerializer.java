@@ -1,25 +1,21 @@
-package ncm.backpackpp.init;
+package ncm.backpackpp.recipes;
 
+import lombok.Getter;
 import ncm.backpackpp.util.BpIndentifier;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.util.Identifier;
 
-public abstract class BPRecipeSerializer<T extends Recipe<?>> implements RecipeSerializer<T> {
+public abstract class NcmRecipeSerializer<T extends Recipe<?>> implements RecipeSerializer<T> {
+
+    @Getter
     private final Identifier id;
+    @Getter(lazy = true)
     private final RecipeType<T> recipeType = createType();
 
-    public BPRecipeSerializer(String id) {
+    public NcmRecipeSerializer(String id) {
         this.id = BpIndentifier.of(id);
-    }
-
-    public Identifier getId() {
-        return id;
-    }
-
-    public RecipeType<T> getRecipeType() {
-        return recipeType;
     }
 
     private RecipeType<T> createType() {

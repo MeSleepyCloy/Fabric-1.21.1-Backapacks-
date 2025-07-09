@@ -1,4 +1,4 @@
-package ncm.backpackpp.recipe;
+package ncm.backpackpp.recipes;
 
 import ncm.backpackpp.util.RecipeInventory;
 import net.minecraft.inventory.Inventory;
@@ -6,7 +6,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.world.World;
 
-public interface BPRecipe<T extends Inventory> extends BPInputRecipe<RecipeInventory<T>> {
+public interface NcmRecipe<T extends Inventory> extends NcmInputRecipe<RecipeInventory<T>> {
     @Override
     default boolean matches(RecipeInventory<T> input, World world) {
         return matches(input.getInventory(), world);

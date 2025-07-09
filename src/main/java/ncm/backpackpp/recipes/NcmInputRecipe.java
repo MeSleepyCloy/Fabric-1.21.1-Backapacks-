@@ -1,14 +1,13 @@
-package ncm.backpackpp.recipe;
+package ncm.backpackpp.recipes;
 
-import ncm.backpackpp.init.BPRecipeSerializer;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.recipe.input.RecipeInput;
 
-public interface BPInputRecipe <T extends RecipeInput> extends Recipe<T> {
+public interface NcmInputRecipe<T extends RecipeInput> extends Recipe<T> {
 
     @Override
-    BPRecipeSerializer<?> getSerializer();
+    NcmRecipeSerializer<?> getSerializer();
 
     @Override
     default RecipeType<?> getType() {
