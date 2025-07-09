@@ -18,16 +18,25 @@ public class LeatherworkTableScreenHandler extends ScreenHandler {
         checkSize(inventory, 10);
         inventory.onOpen(playerInventory.player);
 
-        int gridIndex = 0;
-        for (int row = 0; row < 3; row++) {
-            for (int col = 0; col < 3; col++) {
-                if (row == 1 || col == 1) {
-                    this.addSlot(new Slot(inventory, gridIndex++, 44 + col * 18, 17 + row * 18));
-                }
+        for (int row = 0; row < 3; ++row) {
+            for (int col = 0; col < 3; ++col) {
+                this.addSlot(new Slot(this.inventory, row * 3 + col, 14 + col * 18, 17 + row * 18));
             }
         }
 
-        this.addSlot(new Slot(inventory, 9, 106, 35));
+        this.addSlot(new Slot(this.inventory, 9, 106, 35) {
+            @Override
+            public boolean canInsert(ItemStack stack) {
+                return false;
+            }
+
+            @Override
+            public void onTakeItem(PlayerEntity player, ItemStack stack) {
+                for (int i = 0; i < 9; i++) {
+                    this.inventory.setStack(i, ItemStack.EMPTY);
+                }
+            }
+        });
 
         for (int row = 0; row < 3; ++row) {
             for (int col = 0; col < 9; ++col) {

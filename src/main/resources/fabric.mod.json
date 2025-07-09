@@ -8,7 +8,7 @@
 		"WarfelliNI and NCM"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
+		"homepage": "nothing",
 		"sources": "https://github.com/FabricMC/fabric-example-mod"
 	},
 	"license": "CC0-1.0",
@@ -33,6 +33,7 @@
 		"minecraft": "~1.21.1",
 		"java": ">=21",
 		"fabric-api": "*",
+		"fabric-item-api-v1": "*",
 		"fabric-screen-handler-api-v1": "*"
 	},
 	"suggests": {
