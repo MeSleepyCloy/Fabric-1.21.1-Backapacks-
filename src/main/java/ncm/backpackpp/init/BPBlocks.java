@@ -24,7 +24,8 @@ public class BPBlocks {
                     .burnable()
             ));
 
-    public static final LeatherworkTableBlock LEATHERWORK_TABLE = (LeatherworkTableBlock) new LeatherworkTableBlock().registerAll();
+    public static final Block LEATHERWORK_TABLE = registerBlock("leatherwork_table",
+            new LeatherworkTableBlock(AbstractBlock.Settings.create()));
 
     private static void registerBlockItem(String name, Block block) {
         Registry.register(Registries.ITEM, Identifier.of(Backpacks_pp.MOD_ID, name),

@@ -1,20 +1,24 @@
 package ncm.backpackpp.screen.leatherworkTable;
 
+import ncm.backpackpp.block.entity.LeatherworkTableBlockEntity;
 import ncm.backpackpp.init.BppItems;
 import ncm.backpackpp.screen.BPScreenHandlers;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.screen.ArrayPropertyDelegate;
+import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.screen.slot.Slot;
+import net.minecraft.util.math.BlockPos;
 
 public class LeatherworkTableScreenHandler extends ScreenHandler {
     private final Inventory inventory;
-
 
     private static final Item[] NEEDLES = {
             BppItems.IRON_NEEDLE,
@@ -24,9 +28,14 @@ public class LeatherworkTableScreenHandler extends ScreenHandler {
             BppItems.NETHERITE_NEEDLE,
     };
 
-    public LeatherworkTableScreenHandler(int syncId, PlayerInventory playerInventory, Inventory inventory) {
+    public LeatherworkTableScreenHandler(int syncId, PlayerInventory inventory, BlockPos pos) {
+        this(syncId, inventory, inventory.player.getWorld().getBlockEntity(pos), new ArrayPropertyDelegate(9));
+    }
+
+    public LeatherworkTableScreenHandler(int syncId, PlayerInventory playerInventory,
+                                         BlockEntity blockEntity, PropertyDelegate arrayPropertyDelegate) {
         super(null, syncId);
-        this.inventory = inventory;
+        this.inventory = ((Inventory) blockEntity);
         checkSize(inventory, 11);
         inventory.onOpen(playerInventory.player);
 
@@ -48,6 +57,7 @@ public class LeatherworkTableScreenHandler extends ScreenHandler {
         for (int col = 0; col < 9; ++col) {
             this.addSlot(new Slot(playerInventory, col, 8 + col * 18, 142));
         }
+        addProperties(arrayPropertyDelegate);
     }
 
     private class NeedleSlot extends Slot {
@@ -198,6 +208,7 @@ public class LeatherworkTableScreenHandler extends ScreenHandler {
                 if (!this.insertItem(originalStack, 11, 47, true)) {
                     return ItemStack.EMPTY;
                 }
+                // Явно обновляем результат после перемещения иглы
                 updateResult();
             }
             else {

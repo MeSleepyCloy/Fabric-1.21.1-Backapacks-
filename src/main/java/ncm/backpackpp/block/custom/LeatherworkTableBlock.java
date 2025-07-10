@@ -2,43 +2,40 @@ package ncm.backpackpp.block.custom;
 
 import com.mojang.serialization.MapCodec;
 import ncm.backpackpp.block.entity.LeatherworkTableBlockEntity;
-import ncm.backpackpp.util.RegistrableBlock;
+import ncm.backpackpp.init.BPBlockEntities;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.item.ItemStack;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
-import net.minecraft.util.ActionResult;
+import net.minecraft.util.*;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-import static ncm.backpackpp.init.BPBlockEntities.LEATHERWORK_TABLE_BLOCK_ENTITY;
-
-public class LeatherworkTableBlock extends BlockWithEntity implements RegistrableBlock,BlockEntityProvider {
-
+public class LeatherworkTableBlock extends BlockWithEntity implements BlockEntityProvider {
     public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
-    private static final MapCodec<LeatherworkTableBlock> CODEC = MapCodec.unit(LeatherworkTableBlock::new);
+    public static final MapCodec<LeatherworkTableBlock> CODEC = LeatherworkTableBlock.createCodec(LeatherworkTableBlock::new);
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(FACING);
     }
 
+    public LeatherworkTableBlock(Settings settings) {
+        super(settings);
+    }
+
     @Override
     protected BlockRenderType getRenderType(BlockState state) {
         return BlockRenderType.MODEL;
-    }
-
-    public LeatherworkTableBlock() {
-        super(Settings.copy(Blocks.CRAFTING_TABLE));
-        setDefaultState(getDefaultState().with(FACING, Direction.NORTH));
     }
 
     @Nullable
@@ -59,14 +56,15 @@ public class LeatherworkTableBlock extends BlockWithEntity implements Registrabl
     }
 
     @Override
-    protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+    protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos,
+                                             PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (!world.isClient) {
-            BlockEntity blockEntity = world.getBlockEntity(pos);
-            if (blockEntity instanceof NamedScreenHandlerFactory factory) {
-                player.openHandledScreen(factory);
+            NamedScreenHandlerFactory screenHandlerFactory = ((LeatherworkTableBlockEntity) world.getBlockEntity(pos));
+            if (screenHandlerFactory != null) {
+                player.openHandledScreen(screenHandlerFactory);
             }
         }
-        return ActionResult.SUCCESS;
+        return ItemActionResult.SUCCESS;
     }
 
     @Override
@@ -80,12 +78,6 @@ public class LeatherworkTableBlock extends BlockWithEntity implements Registrabl
         }
         super.onStateReplaced(state, world, pos, newState, moved);
     }
-
-    @Override
-    public String getBlockId() {
-        return "leatherwork_table";
-    }
-
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
@@ -93,7 +85,7 @@ public class LeatherworkTableBlock extends BlockWithEntity implements Registrabl
             return null;
         }
 
-        return validateTicker(type, LEATHERWORK_TABLE_BLOCK_ENTITY,
+        return validateTicker(type, BPBlockEntities.LEATHERWORK_TABLE_BLOCK_ENTITY,
                 (world1, pos, state1, blockEntity) -> blockEntity.tick(world1, pos, state1));
     }
 }

@@ -1,18 +1,16 @@
 {
   "type": "backpacks_pp:leatherworking",
-  "pattern": [
-    "LCL",
-    "LCL",
-    "LLL"
-  ],
-  "key": {
-    "L": {
-      "item": "minecraft:leather"
+  "ingredients": [
+    {
+      "item": "minecraft:leather",
+      "count": 8
     },
-    "C": {
-      "item": "minecraft:chest"
+    {
+      "item": "minecraft:diamond",
+      "count": 1,
+      "slot": 4
     }
-  },
+  ],
   "result": {
     "item": "backpacks_pp:backpack"
   }
