@@ -49,8 +49,8 @@ public class LeatherworkTableBlockEntity extends BlockEntity implements Extended
             @Override
             public int get(int index) {
                 return switch (index) {
-                    case 0 -> LeatherworkTableBlockEntity.this.progress;
                     case 1 -> LeatherworkTableBlockEntity.this.maxProgress;
+                    case 0 -> LeatherworkTableBlockEntity.this.progress;
                     default -> 0;
                 };
             }
@@ -153,16 +153,8 @@ public class LeatherworkTableBlockEntity extends BlockEntity implements Extended
 
             if(hasCraftingFinished()) {
                 craftItem();
-                resetProgress();
             }
-        } else {
-            resetProgress();
         }
-    }
-
-    private void resetProgress() {
-        this.progress = 0;
-        this.maxProgress = 72;
     }
 
     private void craftItem() {
