@@ -2,6 +2,7 @@ package ncm.backpackpp.screen.leatherworkTable;
 
 import ncm.backpackpp.block.entity.LeatherworkTableBlockEntity;
 import ncm.backpackpp.init.BppItems;
+import ncm.backpackpp.item.NeedleItem;
 import ncm.backpackpp.screen.BPScreenHandlers;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -19,13 +20,14 @@ import net.minecraft.util.math.BlockPos;
 
 public class LeatherworkTableScreenHandler extends ScreenHandler {
     private final Inventory inventory;
+    private final PlayerEntity player;
 
     private static final Item[] NEEDLES = {
             BppItems.IRON_NEEDLE,
             BppItems.COPPER_NEEDLE,
             BppItems.GOLD_NEEDLE,
             BppItems.DIAMOND_NEEDLE,
-            BppItems.NETHERITE_NEEDLE,
+            BppItems.NETHERITE_NEEDLE
     };
 
     public LeatherworkTableScreenHandler(int syncId, PlayerInventory inventory, BlockPos pos) {
@@ -34,19 +36,20 @@ public class LeatherworkTableScreenHandler extends ScreenHandler {
 
     public LeatherworkTableScreenHandler(int syncId, PlayerInventory playerInventory,
                                          BlockEntity blockEntity, PropertyDelegate arrayPropertyDelegate) {
-        super(null, syncId);
-        this.inventory = ((Inventory) blockEntity);
-        checkSize(inventory, 11);
-        inventory.onOpen(playerInventory.player);
+        super(BPScreenHandlers.LEATHERWORK_TABLE_SCREEN_HANDLER, syncId);
+        this.inventory = (Inventory) blockEntity;
+        this.player = playerInventory.player;
+        checkSize(this.inventory, 11);
+        this.inventory.onOpen(playerInventory.player);
 
         for (int row = 0; row < 3; ++row) {
             for (int col = 0; col < 3; ++col) {
-                this.addSlot(new CraftingSlot(inventory, row * 3 + col, 14 + col * 18, 17 + row * 18));
+                this.addSlot(new CraftingSlot(this.inventory, row * 3 + col, 14 + col * 18, 17 + row * 18));
             }
         }
 
-        this.addSlot(new ResultSlot(inventory, 9, 106, 35));
-        this.addSlot(new NeedleSlot(inventory, 10, 153, 7));
+        this.addSlot(new ResultSlot(this.inventory, 9, 106, 35));
+        this.addSlot(new NeedleSlot(this.inventory, 10, 153, 7));
 
         for (int row = 0; row < 3; ++row) {
             for (int col = 0; col < 9; ++col) {
@@ -57,6 +60,7 @@ public class LeatherworkTableScreenHandler extends ScreenHandler {
         for (int col = 0; col < 9; ++col) {
             this.addSlot(new Slot(playerInventory, col, 8 + col * 18, 142));
         }
+
         addProperties(arrayPropertyDelegate);
     }
 
@@ -64,28 +68,15 @@ public class LeatherworkTableScreenHandler extends ScreenHandler {
         public NeedleSlot(Inventory inventory, int index, int x, int y) {
             super(inventory, index, x, y);
         }
+
         @Override
         public boolean canInsert(ItemStack stack) {
-            return isNeedle(stack.getItem());
+            return isNeedle(stack);
         }
 
-        @Override
-        public ItemStack takeStack(int amount) {
-            ItemStack stack = super.takeStack(amount);
-            updateResult();
-            return stack;
-        }
-
-        @Override
-        public void markDirty() {
-            super.markDirty();
-            updateResult();
-        }
-
-
-        private boolean isNeedle(Item item) {
+        private boolean isNeedle(ItemStack stack) {
             for (Item needle : NEEDLES) {
-                if (item == needle) {
+                if (stack.isOf(needle)) {
                     return true;
                 }
             }
@@ -99,7 +90,6 @@ public class LeatherworkTableScreenHandler extends ScreenHandler {
         }
     }
 
-
     private class CraftingSlot extends Slot {
         public CraftingSlot(Inventory inventory, int index, int x, int y) {
             super(inventory, index, x, y);
@@ -108,12 +98,6 @@ public class LeatherworkTableScreenHandler extends ScreenHandler {
         @Override
         public void setStack(ItemStack stack) {
             super.setStack(stack);
-            updateResult();
-        }
-
-        @Override
-        public void markDirty() {
-            super.markDirty();
             updateResult();
         }
     }
@@ -128,12 +112,22 @@ public class LeatherworkTableScreenHandler extends ScreenHandler {
             return false;
         }
 
-
         @Override
         public void onTakeItem(PlayerEntity player, ItemStack stack) {
             consumeIngredients();
+            damageNeedle(player);
             updateResult();
             super.onTakeItem(player, stack);
+        }
+
+        private void damageNeedle(PlayerEntity player) {
+            ItemStack needleStack = inventory.getStack(10);
+            if (NeedleItem.isNeedle(needleStack)) {
+                NeedleItem.damageNeedle(needleStack, player);
+                if (needleStack.isEmpty()) {
+                    inventory.setStack(10, ItemStack.EMPTY);
+                }
+            }
         }
 
         @Override
@@ -151,16 +145,17 @@ public class LeatherworkTableScreenHandler extends ScreenHandler {
                 inventory.setStack(9, new ItemStack(BppItems.BACKPACK));
             }
         } else {
-            if (inventory.getStack(9).isOf(BppItems.BACKPACK)) {
+            if (!inventory.getStack(9).isEmpty()) {
                 inventory.setStack(9, ItemStack.EMPTY);
             }
         }
     }
 
     private boolean matchesRecipe() {
-        if (inventory.getStack(10).isEmpty()) {
+        if (!NeedleItem.isNeedle(inventory.getStack(10))) {
             return false;
         }
+
         for (int i = 0; i < 9; i++) {
             ItemStack stack = inventory.getStack(i);
             if (i == 4) {
@@ -185,46 +180,36 @@ public class LeatherworkTableScreenHandler extends ScreenHandler {
     }
 
     @Override
-    public void onContentChanged(Inventory inventory) {
-        updateResult();
-        super.onContentChanged(inventory);
-    }
-
-    @Override
-    public ItemStack quickMove(PlayerEntity player, int index) {
+    public ItemStack quickMove(PlayerEntity player, int slotIndex) {
         ItemStack newStack = ItemStack.EMPTY;
-        Slot slot = this.slots.get(index);
+        Slot slot = this.slots.get(slotIndex);
 
         if (slot != null && slot.hasStack()) {
             ItemStack originalStack = slot.getStack();
             newStack = originalStack.copy();
 
-            if (index < 10) {
+            if (slotIndex < 11) {
                 if (!this.insertItem(originalStack, 11, 47, true)) {
                     return ItemStack.EMPTY;
                 }
-            }
-            else if (index == 10) {
-                if (!this.insertItem(originalStack, 11, 47, true)) {
-                    return ItemStack.EMPTY;
-                }
-                // Явно обновляем результат после перемещения иглы
-                updateResult();
-            }
-            else {
-                boolean isNeedle = false;
-                for (Item needle : NEEDLES) {
-                    if (originalStack.isOf(needle)) {
-                        isNeedle = true;
-                        break;
+
+                if (slotIndex == 9) {
+                    ItemStack needleStack = inventory.getStack(10);
+                    if (NeedleItem.isNeedle(needleStack)) {
+                        NeedleItem.damageNeedle(needleStack, player);
+                        if (needleStack.isEmpty()) {
+                            inventory.setStack(10, ItemStack.EMPTY);
+                        }
                     }
                 }
+            }
+            else {
+                boolean isNeedle = NeedleItem.isNeedle(originalStack);
+
                 if (isNeedle) {
                     if (!this.insertItem(originalStack, 10, 11, false)) {
                         return ItemStack.EMPTY;
                     }
-                    // Явно обновляем результат после перемещения иглы
-                    updateResult();
                 }
                 else if (!this.insertItem(originalStack, 0, 9, false)) {
                     return ItemStack.EMPTY;
@@ -242,6 +227,7 @@ public class LeatherworkTableScreenHandler extends ScreenHandler {
             }
 
             slot.onTakeItem(player, originalStack);
+            updateResult();
         }
 
         return newStack;
@@ -250,6 +236,12 @@ public class LeatherworkTableScreenHandler extends ScreenHandler {
     @Override
     public boolean canUse(PlayerEntity player) {
         return this.inventory.canPlayerUse(player);
+    }
+
+    @Override
+    public void onClosed(PlayerEntity player) {
+        super.onClosed(player);
+        this.inventory.onClose(player);
     }
 
     @Override

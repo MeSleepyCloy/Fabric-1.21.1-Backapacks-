@@ -1,7 +1,6 @@
 package ncm.backpackpp.screen.leatherworkTable;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import ncm.backpackpp.screen.BackpackScreenHandler;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.render.GameRenderer;

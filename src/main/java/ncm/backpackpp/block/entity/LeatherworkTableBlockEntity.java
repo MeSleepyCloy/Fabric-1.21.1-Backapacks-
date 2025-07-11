@@ -227,7 +227,6 @@ public class LeatherworkTableBlockEntity extends BlockEntity implements Extended
                 this.setStack(i, ItemStack.EMPTY);
             }
         }
-        // Гарантированно очищаем результат
         this.setStack(9, ItemStack.EMPTY);
     }
 }

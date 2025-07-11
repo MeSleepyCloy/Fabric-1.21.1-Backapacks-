@@ -16,26 +16,21 @@ import static ncm.backpackpp.item.BackpackItem.BACKPACK_SLOTS;
 public class BackpackScreenHandler extends ScreenHandler {
     private final Inventory inventory;
     private final ItemStack backpackStack;
-
-    // Клиентский конструктор
     public BackpackScreenHandler(int syncId, PlayerInventory playerInventory) {
         this(syncId, playerInventory, DefaultedList.ofSize(BACKPACK_SLOTS, ItemStack.EMPTY), findBackpackInInventory(playerInventory));
     }
 
-    // Серверный конструктор
     public BackpackScreenHandler(int syncId, PlayerInventory playerInventory, DefaultedList<ItemStack> items, ItemStack backpackStack) {
         super(BPScreenHandlers.BACKPACK_SCREEN_HANDLER, syncId);
         this.inventory = new SimpleInventory(BACKPACK_SLOTS);
         this.backpackStack = backpackStack;
 
-        // Заполняем инвентарь
         for (int i = 0; i < Math.min(items.size(), BACKPACK_SLOTS); i++) {
             this.inventory.setStack(i, items.get(i));
         }
 
         inventory.onOpen(playerInventory.player);
 
-        // Слоты рюкзака (1 ряд)
         for (int j = 0; j < BACKPACK_SLOTS; ++j) {
             this.addSlot(new Slot(inventory, j, 8 + j * 18, 20) {
                 @Override
@@ -45,14 +40,12 @@ public class BackpackScreenHandler extends ScreenHandler {
             });
         }
 
-        // Инвентарь игрока (3 ряда)
         for (int j = 0; j < 3; ++j) {
             for (int k = 0; k < 9; ++k) {
                 this.addSlot(new Slot(playerInventory, k + j * 9 + 9, 8 + k * 18, j * 18 + 51));
             }
         }
 
-        // Горячая панель (1 ряд)
         for (int j = 0; j < 9; ++j) {
             this.addSlot(new Slot(playerInventory, j, 8 + j * 18, 109) {
                 @Override
